@@ -545,12 +545,20 @@ const DM = {
     if(this.cache && !force) return this.cache;
     try {
       const r = await GH.getFile(DATA_FILE);
-      if(r) { this.cache = r.content; this.sha = r.sha; }
-      else { this.cache = this.empty(); this.sha = null; }
+      if(r && r.content && typeof r.content === 'object') {
+        // Ensure all collections exist
+        this.cache = {...this.empty(), ...r.content};
+        this.sha = r.sha;
+      } else {
+        this.cache = this.empty();
+        this.sha = null;
+      }
     } catch(e) {
-      // fallback to localStorage if GitHub not configured
-      const local = localStorage.getItem('pmo_data_local');
-      this.cache = local ? JSON.parse(local) : this.empty();
+      // Fallback to localStorage if GitHub not configured or fails
+      try {
+        const local = localStorage.getItem('pmo_data_local');
+        this.cache = local ? {...this.empty(), ...JSON.parse(local)} : this.empty();
+      } catch(_) { this.cache = this.empty(); }
       this.sha = null;
     }
     return this.cache;
@@ -600,7 +608,7 @@ const DM = {
 // HELPERS
 // ═══════════════════════════════════════════════════════════
 const H = {
-  fmtDate(iso) { if(!iso) return '—'; const d=new Date(iso); return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); },
+  fmtDate(iso) { if(!iso) return '—'; try { const d=new Date(iso); return isNaN(d)?iso:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); } catch(_){return iso||'—';} },
   badge(status) {
     const map = { OPEN:'open', CLOSED:'closed', 'IN PROGRESS':'progress',
       HIGH:'high', MEDIUM:'medium', LOW:'low', YES:'closed', NO:'open',
@@ -1034,7 +1042,7 @@ const VIEWS = {
         <div><h2>${title}</h2></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-secondary" onclick="App.navigate('report-${collection}')">← Back</button>
-          <button class="btn btn-primary" onclick="VIEWS.submitForm('${collection}','${prefillId||''}',${JSON.stringify(dataFn).replace(/</g,'\\x3c')})" id="save-btn">
+          <button class="btn btn-primary" onclick="VIEWS.submitForm('${collection}','${prefillId||''}')" id="save-btn">
             ${editMode?'Update Entry':'Save Entry'}
           </button>
         </div>
@@ -1269,7 +1277,7 @@ const App = {
         content.innerHTML = `<div class="page-header"><div><h2>New Escalation Form</h2></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-secondary" onclick="App.navigate('report-escalations')">← Back</button>
-            <button class="btn btn-primary" id="save-btn" onclick="VIEWS.submitFormHandler('escalations','',FORMS.escData.bind(FORMS))">Save Entry</button>
+            <button class="btn btn-primary" id="save-btn" onclick="VIEWS.submitForm('escalations','')">Save Entry</button>
           </div></div>
           <div class="card"><div class="card-body">${FORMS.renderESC({},refNum)}</div></div>`; },
 
