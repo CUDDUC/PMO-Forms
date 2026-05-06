@@ -1,0 +1,29 @@
+{
+  "preMeetingBriefs": [
+    {
+      "meetingTitle": "Meridian Residences - Stage 2 Schematic Design Review",
+      "dateTime": "Wednesday, 6 May 2026 | 11:00 AM – 12:30 PM",
+      "venue": "Confluence Design Studio, 3rd Floor, Conference Room B / MS Teams Link (hybrid)",
+      "convenedBy": "Aditi Rao, Principal Architect - Project Lead",
+      "projectRef": "Meridian Residences, Banjara Hills, Hyderabad | Project Code: HYD-2024-017",
+      "attendees": "Aditi Rao (Lead), Karan Mehta (Structural Consultant), Priya Nair (Interior Design), Rajesh Shetty (MEP), Sunita Bose (Client Rep), Ananya Shah (PMO Observer)",
+      "objective": "To review and obtain conditional sign-off on Schematic Design Package SD-02, resolve open structural coordination queries, and agree on the revised timeline for DD submission.",
+      "context": "SD-02 was submitted to the client on 25 April 2026. Client's structural consultant raised 4 coordination queries on 28 April. Internal MEP alignment is also pending. This meeting will resolve these gaps and set the stage for Detailed Design commencement.",
+      "agenda": "1. Review of SD-02 drawings & client observations - Aditi Rao - 20 min\n2. Structural coordination queries (Query Log v1.2) - Karan Mehta - 20 min\n3. MEP preliminary routing conflicts - Rajesh Shetty -15 min\n4. Interior schematic alignment - Priya Nair - 10 min\n5. Revised DD timeline & next steps - Aditi Rao / All - 15 min",
+      "preRead": "• SD-02 Drawing Set (DWG-SD-02-Rev3) - shared via Drive on 4 May\n• Structural Query Log v1.2 - attached\n• MEP Coordination Sketch - Rajesh.pdf\n• MOM from SD-01 Review dated 10 April 2026",
+      "openActions": "1. Aditi - Revise north facade elevation to incorporate client comment on balcony railing - STATUS: CLOSED\n2. Karan - Confirm foundation load assumptions - STATUS: IN PROGRESS (to be presented today)\n3. Priya - Submit mood board for master bedroom palette - STATUS: OPEN (overdue - PMO flagged)",
+      "expectedOutput": "Conditional or full sign-off on SD-02; agreed resolution plan for 4 structural queries; updated DD commencement date formally communicated to client.",
+      "circulatedBy": "Ananya Shah, PMO | circulated 5 May 2026 at 9:00 AM",
+      "filedPMO": "YES",
+      "pmoRef": "YES - Filed under: HYD-2024-017 / PMO / Pre-Meeting Briefs",
+      "id": "motv92owppuot",
+      "createdAt": "2026-05-06T09:39:56.768Z",
+      "updatedAt": "2026-05-06T09:39:56.768Z"
+    }
+  ],
+  "minutesOfMeeting": [],
+  "afterActionReviews": [],
+  "kmEntries": [],
+  "weeklyDashboards": [],
+  "escalations": []
+}
