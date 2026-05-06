@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO Process Hub — Confluence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sidebar-bg: #111827;
+  --sidebar-w: 260px;
+  --accent: #c9a84c;
+  --accent-dim: #a08438;
+  --bg: #f5f3ef;
+  --card: #ffffff;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e1d8;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+  --info: #2563eb;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  font-size: 14px;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .3px;
+  line-height: 1.2;
+}
+.sidebar-brand span {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sidebar-section {
+  padding: 12px 12px 4px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.25);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  margin: 1px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: rgba(255,255,255,.6);
+  font-size: 13px;
+  font-weight: 400;
+  transition: all .15s;
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: calc(100% - 16px);
+  text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+.nav-item.active { background: rgba(201,168,76,.15); color: var(--accent); font-weight: 500; }
+.nav-item .icon { width: 16px; opacity: .7; flex-shrink: 0; }
+.nav-item.active .icon { opacity: 1; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 8px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.github-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.04);
+  cursor: pointer;
+  transition: background .15s;
+}
+.github-status:hover { background: rgba(255,255,255,.08); }
+.github-status .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #4b5563; flex-shrink: 0;
+}
+.github-status .dot.connected { background: #22c55e; }
+.github-status .label { font-size: 11px; color: rgba(255,255,255,.5); line-height: 1.3; }
+.github-status .label strong { display: block; color: rgba(255,255,255,.8); font-weight: 500; }
+
+/* ── MAIN ── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .15s;
+  font-family: inherit;
+  text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--bg); }
+.btn-danger { background: transparent; color: var(--danger); border-color: #fecaca; }
+.btn-danger:hover { background: #fef2f2; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text-muted); }
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+#content {
+  padding: 32px;
+  flex: 1;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; }
+.card-body { padding: 24px; }
+
+/* ── DASHBOARD ── */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+}
+.stat-card .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-card .label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+.stat-card .sub { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+.recent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── FORMS ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: .4px; }
+.field label .req { color: var(--danger); margin-left: 2px; }
+.field input, .field textarea, .field select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--card);
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+  width: 100%;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201,168,76,.12);
+}
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.field select { cursor: pointer; }
+.field .hint { font-size: 11px; color: var(--text-muted); }
+
+/* ── ACTION TABLE ── */
+.action-table-wrap { overflow-x: auto; }
+.action-table { width: 100%; border-collapse: collapse; }
+.action-table th {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--text-muted);
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.action-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.action-table td input, .action-table td textarea, .action-table td select {
+  width: 100%; padding: 5px 8px;
+  border: 1px solid var(--border); border-radius: 5px;
+  font-family: inherit; font-size: 12px; color: var(--text);
+  background: var(--bg);
+  outline: none;
+}
+.action-table td input:focus, .action-table td select:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+.action-table .del-btn {
+  background: none; border: none; cursor: pointer;
+  color: #d1d5db; padding: 4px; border-radius: 4px;
+  transition: color .15s;
+}
+.action-table .del-btn:hover { color: var(--danger); }
+
+/* ── LIST VIEWS ── */
+.list-item {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.list-item:hover { background: #fafaf8; }
+.list-item:last-child { border-bottom: none; }
+.list-item-main { }
+.list-item-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+.list-item-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; }
+.list-item-actions { display: flex; gap: 6px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px;
+}
+.badge-open { background: #fef3c7; color: #92400e; }
+.badge-closed { background: #dcfce7; color: #166534; }
+.badge-progress { background: #dbeafe; color: #1e40af; }
+.badge-high { background: #fee2e2; color: #991b1b; }
+.badge-medium { background: #fef3c7; color: #92400e; }
+.badge-low { background: #f3f4f6; color: #374151; }
+
+/* ── METRICS TABLE ── */
+.metrics-table { width: 100%; border-collapse: collapse; }
+.metrics-table th {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--text-muted); padding: 8px 12px; text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.metrics-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.metrics-table td:first-child { font-weight: 500; }
+.metrics-table tr:last-child td { border-bottom: none; }
+.trend-up { color: var(--success); font-weight: 700; }
+.trend-down { color: var(--danger); font-weight: 700; }
+.trend-same { color: var(--text-muted); font-weight: 700; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn .15s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--card);
+  border-radius: 12px;
+  width: 100%; max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp .2s;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ── ALERTS ── */
+.alert {
+  position: fixed; top: 20px; right: 20px; z-index: 500;
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 12px 16px; border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px; font-weight: 500;
+  max-width: 320px;
+  animation: slideInRight .2s;
+}
+.alert.error { border-left-color: var(--danger); }
+.alert.success { border-left-color: var(--success); }
+@keyframes slideInRight { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ── DETAIL VIEW ── */
+.detail-table { width: 100%; border-collapse: collapse; }
+.detail-table th {
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px;
+  color: var(--text-muted); padding: 10px 14px;
+  background: #fafaf8; width: 200px; vertical-align: top;
+  border-bottom: 1px solid var(--border); text-align: left;
+}
+.detail-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.6; }
+.detail-table tr:last-child th, .detail-table tr:last-child td { border-bottom: none; }
+
+/* ── MISC ── */
+.empty-state {
+  text-align: center; padding: 60px 24px; color: var(--text-muted);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.page-header { margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+.page-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+.page-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+.text-muted { color: var(--text-muted); }
+.text-sm { font-size: 12px; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+.flex-center { display: flex; align-items: center; gap: 8px; }
+.spinner {
+  width: 16px; height: 16px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .6s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PRINT ── */
+@media print {
+  #sidebar, .topbar, .topbar-actions, .btn, .page-header .btn { display: none !important; }
+  #main { margin-left: 0; }
+  #content { padding: 0; }
+  .card { box-shadow: none; border: none; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <span>PMO Hub</span>
+    <h1>Confluence Leadership</h1>
+  </div>
+
+  <div class="sidebar-section">Overview</div>
+  <button class="nav-item active" data-view="dashboard" onclick="App.navigate('dashboard')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Dashboard
+  </button>
+
+  <div class="sidebar-section">Templates — New Entry</div>
+  <button class="nav-item" data-view="form-pmb" onclick="App.navigate('form-pmb')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    Pre-Meeting Brief
+  </button>
+  <button class="nav-item" data-view="form-mom" onclick="App.navigate('form-mom')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+    Minutes of Meeting
+  </button>
+  <button class="nav-item" data-view="form-aar" onclick="App.navigate('form-aar')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    After Action Review
+  </button>
+  <button class="nav-item" data-view="form-km" onclick="App.navigate('form-km')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+    KM Repository
+  </button>
+  <button class="nav-item" data-view="form-dashboard" onclick="App.navigate('form-dashboard')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+    Weekly Dashboard
+  </button>
+  <button class="nav-item" data-view="form-esc" onclick="App.navigate('form-esc')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    Escalation Form
+  </button>
+
+  <div class="sidebar-section">Reports</div>
+  <button class="nav-item" data-view="report-pmb" onclick="App.navigate('report-pmb')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Meeting Briefs
+  </button>
+  <button class="nav-item" data-view="report-mom" onclick="App.navigate('report-mom')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Meeting Minutes
+  </button>
+  <button class="nav-item" data-view="report-aar" onclick="App.navigate('report-aar')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    AAR Reports
+  </button>
+  <button class="nav-item" data-view="report-km" onclick="App.navigate('report-km')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    KM Entries
+  </button>
+  <button class="nav-item" data-view="report-esc" onclick="App.navigate('report-esc')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Escalations
+  </button>
+
+  <div class="sidebar-footer">
+    <div class="github-status" onclick="App.showSettings()">
+      <div class="dot" id="github-dot"></div>
+      <div class="label"><strong id="github-status-label">Not Connected</strong><span id="github-repo-label">Click to configure</span></div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-actions" id="topbar-actions"></div>
+  </div>
+  <div id="content">
+    <div class="empty-state"><div class="spinner"></div><p style="margin-top:12px">Loading…</p></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)App.closeModal()">
+  <div class="modal" id="modal-inner"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// GITHUB API
+// ═══════════════════════════════════════════════════════════
+const GH = {
+  cfg() { return JSON.parse(localStorage.getItem('pmo_gh_config')||'{}'); },
+  save(c) { localStorage.setItem('pmo_gh_config', JSON.stringify(c)); },
+  headers() {
+    const {token} = this.cfg();
+    return { 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json',
+      ...(token ? {'Authorization':`token ${token}`} : {}) };
+  },
+  async getFile(path) {
+    const {owner,repo,branch='main'} = this.cfg();
+    if(!owner||!repo) throw new Error('GitHub not configured');
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
+      {headers: this.headers()});
+    if(r.status===404) return null;
+    if(!r.ok) throw new Error(`GitHub error: ${r.status}`);
+    const d = await r.json();
+    return { content: JSON.parse(atob(d.content.replace(/\n/g,''))), sha: d.sha };
+  },
+  async putFile(path, content, sha, message='PMO Hub: update data') {
+    const {owner,repo,branch='main'} = this.cfg();
+    const body = {
+      message, branch,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+      ...(sha ? {sha} : {})
+    };
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+      {method:'PUT', headers: this.headers(), body: JSON.stringify(body)});
+    if(!r.ok) { const e = await r.json(); throw new Error(e.message||`GitHub error: ${r.status}`); }
+    return await r.json();
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// DATA MANAGER
+// ═══════════════════════════════════════════════════════════
+const DATA_FILE = 'pmo-data.json';
+const DM = {
+  cache: null, sha: null,
+  empty() {
+    return { preMeetingBriefs:[], minutesOfMeeting:[], afterActionReviews:[],
+      kmEntries:[], weeklyDashboards:[], escalations:[] };
+  },
+  async load(force=false) {
+    if(this.cache && !force) return this.cache;
+    try {
+      const r = await GH.getFile(DATA_FILE);
+      if(r) { this.cache = r.content; this.sha = r.sha; }
+      else { this.cache = this.empty(); this.sha = null; }
+    } catch(e) {
+      // fallback to localStorage if GitHub not configured
+      const local = localStorage.getItem('pmo_data_local');
+      this.cache = local ? JSON.parse(local) : this.empty();
+      this.sha = null;
+    }
+    return this.cache;
+  },
+  async save(msg) {
+    const {owner,repo} = GH.cfg();
+    if(owner && repo) {
+      try {
+        const r = await GH.putFile(DATA_FILE, this.cache, this.sha, msg);
+        this.sha = r.content.sha;
+      } catch(e) { App.alert('GitHub save failed: '+e.message,'error'); throw e; }
+    } else {
+      localStorage.setItem('pmo_data_local', JSON.stringify(this.cache));
+    }
+  },
+  uid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,5); },
+  async add(collection, data) {
+    await this.load();
+    const entry = {...data, id:this.uid(), createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()};
+    this.cache[collection].unshift(entry);
+    await this.save(`Add ${collection} entry`);
+    return entry;
+  },
+  async update(collection, id, data) {
+    await this.load();
+    const idx = this.cache[collection].findIndex(e=>e.id===id);
+    if(idx<0) throw new Error('Not found');
+    this.cache[collection][idx] = {...this.cache[collection][idx], ...data, updatedAt:new Date().toISOString()};
+    await this.save(`Update ${collection} entry`);
+  },
+  async remove(collection, id) {
+    await this.load();
+    this.cache[collection] = this.cache[collection].filter(e=>e.id!==id);
+    await this.save(`Delete ${collection} entry`);
+  },
+  async get(collection) {
+    const d = await this.load();
+    return d[collection]||[];
+  },
+  async getOne(collection, id) {
+    const items = await this.get(collection);
+    return items.find(e=>e.id===id);
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const H = {
+  fmtDate(iso) { if(!iso) return '—'; const d=new Date(iso); return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); },
+  badge(status) {
+    const map = { OPEN:'open', CLOSED:'closed', 'IN PROGRESS':'progress',
+      HIGH:'high', MEDIUM:'medium', LOW:'low', YES:'closed', NO:'open',
+      PENDING:'open', ACTIVE:'progress' };
+    const cls = map[(status||'').toUpperCase()] || 'low';
+    return `<span class="badge badge-${cls}">${status||'—'}</span>`;
+  },
+  escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); },
+  formVal(form, name) { const el=form.elements[name]; return el?el.value.trim():''; },
+  nl2br(s) { return String(s||'').split('\n').map(l=>H.escHtml(l)).join('<br>'); }
+};
+
+// ═══════════════════════════════════════════════════════════
+// FORMS
+// ═══════════════════════════════════════════════════════════
+const FORMS = {
+
+  // ── PRE-MEETING BRIEF
+  renderPMB(prefill={}) {
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 1 — Pre-Meeting Brief</div>
+        <p class="text-muted text-sm">To be prepared and circulated at least 24 hours before every meeting.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field form-full"><label>Meeting Title <span class="req">*</span></label>
+          <input name="meetingTitle" value="${H.escHtml(prefill.meetingTitle||'')}" placeholder="e.g. Project Stage 2 Schematic Design Review" required></div>
+        <div class="field"><label>Date &amp; Time <span class="req">*</span></label>
+          <input name="dateTime" value="${H.escHtml(prefill.dateTime||'')}" placeholder="e.g. Wednesday, 6 May 2026 | 11:00 AM" required></div>
+        <div class="field"><label>Venue / Platform</label>
+          <input name="venue" value="${H.escHtml(prefill.venue||'')}" placeholder="e.g. Conference Room B / MS Teams"></div>
+        <div class="field"><label>Convened By</label>
+          <input name="convenedBy" value="${H.escHtml(prefill.convenedBy||'')}" placeholder="Name, Role"></div>
+        <div class="field"><label>Client / Project Reference</label>
+          <input name="projectRef" value="${H.escHtml(prefill.projectRef||'')}" placeholder="Project name | Project Code"></div>
+        <div class="field form-full"><label>Attendees</label>
+          <textarea name="attendees" rows="2" placeholder="Name (Role), Name (Role), …">${H.escHtml(prefill.attendees||'')}</textarea></div>
+        <div class="field form-full"><label>Meeting Objective <span class="req">*</span></label>
+          <textarea name="objective" rows="3" placeholder="State the specific outcomes this meeting must achieve…">${H.escHtml(prefill.objective||'')}</textarea></div>
+        <div class="field form-full"><label>Context / Background</label>
+          <textarea name="context" rows="3" placeholder="Why is this meeting happening? What preceded it?">${H.escHtml(prefill.context||'')}</textarea></div>
+        <div class="field form-full"><label>Agenda (Timed)</label>
+          <textarea name="agenda" rows="5" placeholder="1. Topic — Presenter — Duration&#10;2. Topic — Presenter — Duration">${H.escHtml(prefill.agenda||'')}</textarea></div>
+        <div class="field form-full"><label>Pre-Read Material</label>
+          <textarea name="preRead" rows="3" placeholder="• Document name — shared via [location]&#10;• Document name — attached">${H.escHtml(prefill.preRead||'')}</textarea></div>
+        <div class="field form-full"><label>Open Actions from Last Meeting</label>
+          <textarea name="openActions" rows="3" placeholder="1. Action — Owner — STATUS: OPEN/CLOSED">${H.escHtml(prefill.openActions||'')}</textarea></div>
+        <div class="field form-full"><label>Expected Output</label>
+          <textarea name="expectedOutput" rows="2" placeholder="What decisions, approvals, or agreements must be reached?">${H.escHtml(prefill.expectedOutput||'')}</textarea></div>
+        <div class="field"><label>Circulated By</label>
+          <input name="circulatedBy" value="${H.escHtml(prefill.circulatedBy||'')}" placeholder="Name, Role | Date &amp; Time"></div>
+        <div class="field"><label>Filed with PMO</label>
+          <select name="filedPMO"><option value="YES" ${prefill.filedPMO==='YES'?'selected':''}>YES</option>
+            <option value="NO" ${prefill.filedPMO==='NO'?'selected':''}>NO</option></select></div>
+        <div class="field form-full"><label>PMO Filing Reference</label>
+          <input name="pmoRef" value="${H.escHtml(prefill.pmoRef||'')}" placeholder="e.g. PROJECT-CODE / PMO / Pre-Meeting Briefs"></div>
+      </div></form>`;
+  },
+
+  pmbData(form) {
+    const f=n=>H.formVal(form,n);
+    return { meetingTitle:f('meetingTitle'),dateTime:f('dateTime'),venue:f('venue'),convenedBy:f('convenedBy'),
+      projectRef:f('projectRef'),attendees:f('attendees'),objective:f('objective'),context:f('context'),
+      agenda:f('agenda'),preRead:f('preRead'),openActions:f('openActions'),expectedOutput:f('expectedOutput'),
+      circulatedBy:f('circulatedBy'),filedPMO:f('filedPMO'),pmoRef:f('pmoRef') };
+  },
+
+  // ── MINUTES OF MEETING
+  renderMOM(prefill={}) {
+    const actions = prefill.actionItems||[{id:1,action:'',owner:'',deadline:'',priority:'HIGH',status:'OPEN',remarks:''}];
+    const rows = actions.map((a,i)=>`<tr>
+      <td style="width:32px;text-align:center;color:var(--text-muted)">${i+1}</td>
+      <td><input name="ai_action_${i}" value="${H.escHtml(a.action||'')}" placeholder="Action description"></td>
+      <td style="width:130px"><input name="ai_owner_${i}" value="${H.escHtml(a.owner||'')}" placeholder="Name"></td>
+      <td style="width:120px"><input type="date" name="ai_deadline_${i}" value="${a.deadline||''}"></td>
+      <td style="width:100px"><select name="ai_priority_${i}">
+        <option ${a.priority==='HIGH'?'selected':''}>HIGH</option>
+        <option ${a.priority==='MEDIUM'?'selected':''}>MEDIUM</option>
+        <option ${a.priority==='LOW'?'selected':''}>LOW</option></select></td>
+      <td style="width:110px"><select name="ai_status_${i}">
+        <option ${a.status==='OPEN'?'selected':''}>OPEN</option>
+        <option ${a.status==='IN PROGRESS'?'selected':''}>IN PROGRESS</option>
+        <option ${a.status==='CLOSED'?'selected':''}>CLOSED</option></select></td>
+      <td><input name="ai_remarks_${i}" value="${H.escHtml(a.remarks||'')}" placeholder="Notes…"></td>
+      <td><button type="button" class="del-btn" onclick="FORMS.removeActionRow(this)">✕</button></td>
+    </tr>`).join('');
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 2 — Minutes of Meeting &amp; Action Tracker</div>
+        <p class="text-muted text-sm">To be prepared and filed within 24 hours of every meeting.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field form-full"><label>Meeting Title <span class="req">*</span></label>
+          <input name="meetingTitle" value="${H.escHtml(prefill.meetingTitle||'')}" required></div>
+        <div class="field"><label>Date &amp; Time</label>
+          <input name="dateTime" value="${H.escHtml(prefill.dateTime||'')}"></div>
+        <div class="field"><label>Meeting Chaired By</label>
+          <input name="chairedBy" value="${H.escHtml(prefill.chairedBy||'')}"></div>
+        <div class="field"><label>MOM Prepared By</label>
+          <input name="preparedBy" value="${H.escHtml(prefill.preparedBy||'')}"></div>
+        <div class="field"><label>Client / Project Reference</label>
+          <input name="projectRef" value="${H.escHtml(prefill.projectRef||'')}"></div>
+        <div class="field form-full"><label>Attendees (Present)</label>
+          <textarea name="attendeesPresent" rows="2">${H.escHtml(prefill.attendeesPresent||'')}</textarea></div>
+        <div class="field form-full"><label>Attendees (Excused / Absent)</label>
+          <textarea name="attendeesAbsent" rows="2">${H.escHtml(prefill.attendeesAbsent||'')}</textarea></div>
+        <div class="field form-full"><label>Summary of Discussions <span class="req">*</span></label>
+          <textarea name="summary" rows="6" placeholder="Numbered summary of each agenda item discussed…">${H.escHtml(prefill.summary||'')}</textarea></div>
+        <div class="field form-full"><label>Decisions Taken</label>
+          <textarea name="decisions" rows="4" placeholder="1. Decision…&#10;2. Decision…">${H.escHtml(prefill.decisions||'')}</textarea></div>
+        <div class="field form-full"><label>Unresolved Items</label>
+          <textarea name="unresolved" rows="3">${H.escHtml(prefill.unresolved||'')}</textarea></div>
+        <div class="field"><label>Next Meeting Date</label>
+          <input name="nextMeeting" value="${H.escHtml(prefill.nextMeeting||'')}"></div>
+        <div class="field"><label>Filed with PMO</label>
+          <select name="filedPMO"><option value="YES" ${prefill.filedPMO==='YES'?'selected':''}>YES</option>
+            <option value="NO" ${prefill.filedPMO==='NO'?'selected':''}>NO</option></select></div>
+      </div>
+      <hr class="divider">
+      <div class="section-title">Action Items Tracker</div>
+      <div class="action-table-wrap">
+        <table class="action-table" id="action-rows-table">
+          <thead><tr>
+            <th>#</th><th>Action Item</th><th>Owner</th><th>Deadline</th>
+            <th>Priority</th><th>Status</th><th>Remarks</th><th></th>
+          </tr></thead>
+          <tbody id="action-rows">${rows}</tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="FORMS.addActionRow()">+ Add Row</button>
+    </form>`;
+  },
+
+  addActionRow() {
+    const tbody = document.getElementById('action-rows');
+    const i = tbody.rows.length;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="width:32px;text-align:center;color:var(--text-muted)">${i+1}</td>
+      <td><input name="ai_action_${i}" placeholder="Action description"></td>
+      <td style="width:130px"><input name="ai_owner_${i}" placeholder="Name"></td>
+      <td style="width:120px"><input type="date" name="ai_deadline_${i}"></td>
+      <td style="width:100px"><select name="ai_priority_${i}"><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select></td>
+      <td style="width:110px"><select name="ai_status_${i}"><option>OPEN</option><option>IN PROGRESS</option><option>CLOSED</option></select></td>
+      <td><input name="ai_remarks_${i}" placeholder="Notes…"></td>
+      <td><button type="button" class="del-btn" onclick="FORMS.removeActionRow(this)">✕</button></td>`;
+    tbody.appendChild(tr);
+  },
+
+  removeActionRow(btn) { btn.closest('tr').remove(); },
+
+  momData(form) {
+    const f=n=>H.formVal(form,n);
+    const tbody = document.getElementById('action-rows');
+    const actionItems = Array.from(tbody.rows).map((_,i)=>({
+      id:i+1,
+      action: H.formVal(form,`ai_action_${i}`),
+      owner: H.formVal(form,`ai_owner_${i}`),
+      deadline: H.formVal(form,`ai_deadline_${i}`),
+      priority: H.formVal(form,`ai_priority_${i}`),
+      status: H.formVal(form,`ai_status_${i}`),
+      remarks: H.formVal(form,`ai_remarks_${i}`)
+    })).filter(a=>a.action);
+    return { meetingTitle:f('meetingTitle'),dateTime:f('dateTime'),chairedBy:f('chairedBy'),
+      preparedBy:f('preparedBy'),projectRef:f('projectRef'),attendeesPresent:f('attendeesPresent'),
+      attendeesAbsent:f('attendeesAbsent'),summary:f('summary'),decisions:f('decisions'),
+      unresolved:f('unresolved'),nextMeeting:f('nextMeeting'),filedPMO:f('filedPMO'), actionItems };
+  },
+
+  // ── AFTER ACTION REVIEW
+  renderAAR(prefill={}) {
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 3 — After Action Review (AAR) Report</div>
+        <p class="text-muted text-sm">To be submitted within 48 hours of every project stage closure or significant milestone.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field form-full"><label>Project / Event Name <span class="req">*</span></label>
+          <input name="projectName" value="${H.escHtml(prefill.projectName||'')}" required></div>
+        <div class="field"><label>Stage / Milestone</label>
+          <input name="milestone" value="${H.escHtml(prefill.milestone||'')}"></div>
+        <div class="field"><label>Date of AAR</label>
+          <input type="date" name="aarDate" value="${prefill.aarDate||''}"></div>
+        <div class="field"><label>AAR Conducted By</label>
+          <input name="conductedBy" value="${H.escHtml(prefill.conductedBy||'')}"></div>
+        <div class="field form-full"><label>Participants</label>
+          <input name="participants" value="${H.escHtml(prefill.participants||'')}"></div>
+        <div class="field form-full"><label>1. What Was Planned?</label>
+          <textarea name="planned" rows="4" placeholder="Scope, timeline, budget, quality expectations…">${H.escHtml(prefill.planned||'')}</textarea></div>
+        <div class="field form-full"><label>2. What Actually Happened?</label>
+          <textarea name="happened" rows="4" placeholder="Actual vs. planned outcomes — delays, deviations, hours…">${H.escHtml(prefill.happened||'')}</textarea></div>
+        <div class="field form-full"><label>3. What Went Well?</label>
+          <textarea name="wentWell" rows="4" placeholder="Numbered list of positive outcomes and practices…">${H.escHtml(prefill.wentWell||'')}</textarea></div>
+        <div class="field form-full"><label>4. What Did Not Go Well?</label>
+          <textarea name="wentPoorly" rows="4" placeholder="Numbered list of gaps, failures, and missed targets…">${H.escHtml(prefill.wentPoorly||'')}</textarea></div>
+        <div class="field form-full"><label>5. Root Cause(s)</label>
+          <textarea name="rootCauses" rows="4" placeholder="For each major gap — why did it really happen?">${H.escHtml(prefill.rootCauses||'')}</textarea></div>
+        <div class="field form-full"><label>6. Corrective Actions</label>
+          <textarea name="correctiveActions" rows="4" placeholder="1. Action — Owner — Deadline">${H.escHtml(prefill.correctiveActions||'')}</textarea></div>
+        <div class="field form-full"><label>7. Preventive Actions</label>
+          <textarea name="preventiveActions" rows="4" placeholder="Systemic changes to prevent recurrence…">${H.escHtml(prefill.preventiveActions||'')}</textarea></div>
+        <div class="field form-full"><label>8. Knowledge to Capture</label>
+          <textarea name="knowledge" rows="3" placeholder="Insights worth storing in the KM Repository…">${H.escHtml(prefill.knowledge||'')}</textarea></div>
+        <div class="field form-full"><label>9. Client Feedback</label>
+          <textarea name="clientFeedback" rows="3">${H.escHtml(prefill.clientFeedback||'')}</textarea></div>
+        <div class="field"><label>Filed with PMO</label>
+          <select name="filedPMO"><option value="YES" ${prefill.filedPMO==='YES'?'selected':''}>YES</option>
+            <option value="NO" ${prefill.filedPMO==='NO'?'selected':''}>NO</option></select></div>
+        <div class="field"><label>PMO Filing Reference</label>
+          <input name="pmoRef" value="${H.escHtml(prefill.pmoRef||'')}"></div>
+      </div></form>`;
+  },
+
+  aarData(form) {
+    const f=n=>H.formVal(form,n);
+    return { projectName:f('projectName'),milestone:f('milestone'),aarDate:f('aarDate'),conductedBy:f('conductedBy'),
+      participants:f('participants'),planned:f('planned'),happened:f('happened'),wentWell:f('wentWell'),
+      wentPoorly:f('wentPoorly'),rootCauses:f('rootCauses'),correctiveActions:f('correctiveActions'),
+      preventiveActions:f('preventiveActions'),knowledge:f('knowledge'),clientFeedback:f('clientFeedback'),
+      filedPMO:f('filedPMO'),pmoRef:f('pmoRef') };
+  },
+
+  // ── KM REPOSITORY
+  renderKM(prefill={}) {
+    const cats = ['Process','Client Management','Design','Technology','HR','Governance','Finance','Other'];
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 4 — Knowledge Management Repository Entry</div>
+        <p class="text-muted text-sm">To be filed at project closure or at any significant milestone where an insight has emerged.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field form-full"><label>Entry Title <span class="req">*</span></label>
+          <input name="title" value="${H.escHtml(prefill.title||'')}" required></div>
+        <div class="field"><label>Category</label>
+          <select name="category">${cats.map(c=>`<option ${prefill.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div class="field"><label>Date</label>
+          <input type="date" name="entryDate" value="${prefill.entryDate||''}"></div>
+        <div class="field"><label>Project Reference</label>
+          <input name="projectRef" value="${H.escHtml(prefill.projectRef||'')}"></div>
+        <div class="field"><label>Contributed By</label>
+          <input name="contributedBy" value="${H.escHtml(prefill.contributedBy||'')}"></div>
+        <div class="field form-full"><label>Context <span class="req">*</span></label>
+          <textarea name="context" rows="4" placeholder="What situation triggered this learning?">${H.escHtml(prefill.context||'')}</textarea></div>
+        <div class="field form-full"><label>The Learning / Insight <span class="req">*</span></label>
+          <textarea name="insight" rows="5" placeholder="What was learned? State it as a principle or practice…">${H.escHtml(prefill.insight||'')}</textarea></div>
+        <div class="field form-full"><label>How to Apply It</label>
+          <textarea name="application" rows="4" placeholder="Step-by-step guidance for future teams…">${H.escHtml(prefill.application||'')}</textarea></div>
+        <div class="field form-full"><label>Relevant Documents / Links</label>
+          <textarea name="relatedDocs" rows="2">${H.escHtml(prefill.relatedDocs||'')}</textarea></div>
+        <div class="field"><label>Validated By</label>
+          <input name="validatedBy" value="${H.escHtml(prefill.validatedBy||'')}"></div>
+        <div class="field"><label>Validation Date</label>
+          <input type="date" name="validationDate" value="${prefill.validationDate||''}"></div>
+      </div></form>`;
+  },
+
+  kmData(form) {
+    const f=n=>H.formVal(form,n);
+    return { title:f('title'),category:f('category'),entryDate:f('entryDate'),projectRef:f('projectRef'),
+      contributedBy:f('contributedBy'),context:f('context'),insight:f('insight'),application:f('application'),
+      relatedDocs:f('relatedDocs'),validatedBy:f('validatedBy'),validationDate:f('validationDate') };
+  },
+
+  // ── WEEKLY DASHBOARD
+  renderDashboard(prefill={}) {
+    const metricKeys = [
+      {key:'totalOpenActions',label:'Total Open Actions (All Projects)'},
+      {key:'actionsClosedThisWeek',label:'Actions Closed This Week'},
+      {key:'overdueActions',label:'Overdue Actions (>7 days past deadline)'},
+      {key:'preMeetingBriefPct',label:'Pre-Meeting Briefs Sent (Compliance %)'},
+      {key:'momWithin24Pct',label:'MOMs Filed Within 24 Hrs (Compliance %)'},
+      {key:'aarWithin48Pct',label:'AARs Filed Within 48 Hrs (Compliance %)'},
+      {key:'kmEntriesAdded',label:'KM Entries Added This Week'},
+      {key:'escalationsRaised',label:'Escalations Raised to Promoter'},
+      {key:'redFlagProjects',label:'Red-Flag Projects / Teams'},
+    ];
+    const metrics = prefill.metrics||{};
+    const metricsRows = metricKeys.map(m=>`<tr>
+      <td style="font-weight:500;color:var(--text-muted);font-size:12px">${m.label}</td>
+      <td><input name="m_this_${m.key}" value="${H.escHtml(metrics[m.key]?.thisWeek||'')}" placeholder="—"></td>
+      <td><input name="m_last_${m.key}" value="${H.escHtml(metrics[m.key]?.lastWeek||'')}" placeholder="—"></td>
+      <td style="width:90px"><select name="m_trend_${m.key}">
+        <option value="↑" ${metrics[m.key]?.trend==='↑'?'selected':''}>↑ Up</option>
+        <option value="↓" ${metrics[m.key]?.trend==='↓'?'selected':''}>↓ Down</option>
+        <option value="→" ${metrics[m.key]?.trend==='→'?'selected':''}>→ Flat</option></select></td>
+      <td><input name="m_rem_${m.key}" value="${H.escHtml(metrics[m.key]?.remarks||'')}" placeholder="Remarks…"></td>
+    </tr>`).join('');
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 5 — Weekly PMO Compliance &amp; Status Dashboard</div>
+        <p class="text-muted text-sm">Submitted every Monday by 10:00 AM to the Founders / Promoter. Data covers the preceding work week.</p>
+      </div>
+      <div class="form-grid cols-3">
+        <div class="field"><label>Week Of <span class="req">*</span></label>
+          <input name="weekOf" value="${H.escHtml(prefill.weekOf||'')}" placeholder="e.g. 5–9 May 2026" required></div>
+        <div class="field"><label>Report Date</label>
+          <input type="date" name="reportDate" value="${prefill.reportDate||''}"></div>
+        <div class="field"><label>Prepared By</label>
+          <input name="preparedBy" value="${H.escHtml(prefill.preparedBy||'')}"></div>
+      </div>
+      <hr class="divider">
+      <div class="section-title">Metrics Grid</div>
+      <div class="action-table-wrap">
+        <table class="action-table">
+          <thead><tr><th>Metric</th><th>This Week</th><th>Last Week</th><th>Trend</th><th>Remarks</th></tr></thead>
+          <tbody>${metricsRows}</tbody>
+        </table>
+      </div>
+      <hr class="divider">
+      <div class="form-grid">
+        <div class="field form-full"><label>Top 3 Priorities This Week</label>
+          <textarea name="top3" rows="4" placeholder="1. Priority…&#10;2. Priority…&#10;3. Priority…">${H.escHtml(prefill.top3||'')}</textarea></div>
+        <div class="field form-full"><label>Achievements to Acknowledge</label>
+          <textarea name="achievements" rows="3">${H.escHtml(prefill.achievements||'')}</textarea></div>
+        <div class="field form-full"><label>Issues Requiring Founders' Decision</label>
+          <textarea name="foundersIssues" rows="4">${H.escHtml(prefill.foundersIssues||'')}</textarea></div>
+        <div class="field form-full"><label>Consequence Actions Recommended</label>
+          <textarea name="consequenceActions" rows="3">${H.escHtml(prefill.consequenceActions||'')}</textarea></div>
+      </div></form>`;
+  },
+
+  dashboardData(form) {
+    const f=n=>H.formVal(form,n);
+    const metricKeys = ['totalOpenActions','actionsClosedThisWeek','overdueActions','preMeetingBriefPct',
+      'momWithin24Pct','aarWithin48Pct','kmEntriesAdded','escalationsRaised','redFlagProjects'];
+    const metrics = {};
+    metricKeys.forEach(k=>{ metrics[k]={thisWeek:f(`m_this_${k}`),lastWeek:f(`m_last_${k}`),trend:f(`m_trend_${k}`),remarks:f(`m_rem_${k}`)}; });
+    return { weekOf:f('weekOf'),reportDate:f('reportDate'),preparedBy:f('preparedBy'),metrics,
+      top3:f('top3'),achievements:f('achievements'),foundersIssues:f('foundersIssues'),consequenceActions:f('consequenceActions') };
+  },
+
+  // ── ESCALATION FORM
+  renderESC(prefill={}, refNum) {
+    const statuses = ['Pending Founder Action','Resolved','Closed','In Progress'];
+    return `<form id="entry-form">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Template 6 — Escalation &amp; Consequence Management Form</div>
+        <p class="text-muted text-sm">Initiated by the PMO when an obligation remains unmet beyond the tolerance period.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Escalation Reference No.</label>
+          <input name="refNo" value="${H.escHtml(prefill.refNo||refNum||'')}" placeholder="e.g. ESC-2026-001" class="mono"></div>
+        <div class="field"><label>Date of Escalation</label>
+          <input type="date" name="escDate" value="${prefill.escDate||new Date().toISOString().split('T')[0]}"></div>
+        <div class="field"><label>Raised By (PMO)</label>
+          <input name="raisedBy" value="${H.escHtml(prefill.raisedBy||'')}"></div>
+        <div class="field"><label>Project / Context Reference</label>
+          <input name="projectRef" value="${H.escHtml(prefill.projectRef||'')}"></div>
+        <div class="field form-full"><label>Nature of Non-Compliance</label>
+          <input name="nature" value="${H.escHtml(prefill.nature||'')}" placeholder="e.g. Action Overdue (Structural Drawing Package)"></div>
+        <div class="field form-full"><label>Description <span class="req">*</span></label>
+          <textarea name="description" rows="5" placeholder="Detail what was required, when, and what has happened (or not happened) since…">${H.escHtml(prefill.description||'')}</textarea></div>
+        <div class="field form-full"><label>Individual / Team Concerned</label>
+          <input name="partyName" value="${H.escHtml(prefill.partyName||'')}"></div>
+        <div class="field"><label>Prior Reminders Sent</label>
+          <select name="remindersSent"><option value="YES" ${prefill.remindersSent==='YES'?'selected':''}>YES</option>
+            <option value="NO" ${prefill.remindersSent==='NO'?'selected':''}>NO</option></select></div>
+        <div class="field"><label>Reminder Details</label>
+          <input name="reminderDetails" value="${H.escHtml(prefill.reminderDetails||'')}" placeholder="Date, channel, by whom"></div>
+        <div class="field form-full"><label>Impact of Non-Compliance</label>
+          <textarea name="impact" rows="4" placeholder="1. Impact…&#10;2. Impact…">${H.escHtml(prefill.impact||'')}</textarea></div>
+        <div class="field form-full"><label>PMO Recommended Action</label>
+          <textarea name="recommended" rows="4" placeholder="1. Recommended step…&#10;2. …">${H.escHtml(prefill.recommended||'')}</textarea></div>
+        <hr class="divider" style="grid-column:1/-1">
+        <div class="field form-full" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:16px">
+          <label style="color:#92400e">Founder / Decision Authority</label>
+          <textarea name="founderDecision" rows="3" placeholder="[To be filled after Founder review]">${H.escHtml(prefill.founderDecision||'')}</textarea></div>
+        <div class="field"><label>Date of Decision</label>
+          <input type="date" name="decisionDate" value="${prefill.decisionDate||''}"></div>
+        <div class="field"><label>Action Communicated To</label>
+          <input name="communicatedTo" value="${H.escHtml(prefill.communicatedTo||'')}"></div>
+        <div class="field"><label>Closure Status</label>
+          <select name="closureStatus">${statuses.map(s=>`<option ${prefill.closureStatus===s?'selected':''}>${s}</option>`).join('')}</select></div>
+      </div></form>`;
+  },
+
+  escData(form) {
+    const f=n=>H.formVal(form,n);
+    return { refNo:f('refNo'),escDate:f('escDate'),raisedBy:f('raisedBy'),projectRef:f('projectRef'),
+      nature:f('nature'),description:f('description'),partyName:f('partyName'),
+      remindersSent:f('remindersSent'),reminderDetails:f('reminderDetails'),impact:f('impact'),
+      recommended:f('recommended'),founderDecision:f('founderDecision'),decisionDate:f('decisionDate'),
+      communicatedTo:f('communicatedTo'),closureStatus:f('closureStatus') };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════════════
+const VIEWS = {
+
+  async dashboard() {
+    const d = await DM.load();
+    const openActions = d.minutesOfMeeting.flatMap(m=>m.actionItems||[]).filter(a=>a.status==='OPEN').length;
+    const openEsc = d.escalations.filter(e=>e.closureStatus==='Pending Founder Action').length;
+
+    const recent = (col, labelFn, dateFn) => {
+      const items = d[col].slice(0,5);
+      if(!items.length) return `<div class="empty-state" style="padding:24px"><p class="text-sm">No entries yet</p></div>`;
+      return items.map(i=>`<div class="list-item" onclick="App.navigate('detail-${col}-${i.id}')">
+        <div class="list-item-main">
+          <div class="list-item-title">${H.escHtml(labelFn(i))}</div>
+          <div class="list-item-meta"><span>${H.fmtDate(dateFn(i))}</span></div>
+        </div></div>`).join('');
+    };
+
+    document.getElementById('content').innerHTML = `
+      <div class="page-header"><div><h2>PMO Dashboard</h2><p>Overview of all process activity across projects</p></div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="num">${d.preMeetingBriefs.length}</div><div class="label">Pre-Meeting Briefs</div></div>
+        <div class="stat-card"><div class="num">${d.minutesOfMeeting.length}</div><div class="label">Meeting Minutes</div><div class="sub">${openActions} open actions</div></div>
+        <div class="stat-card"><div class="num">${d.afterActionReviews.length}</div><div class="label">AAR Reports</div></div>
+        <div class="stat-card"><div class="num">${d.kmEntries.length}</div><div class="label">KM Entries</div></div>
+        <div class="stat-card"><div class="num">${d.weeklyDashboards.length}</div><div class="label">Weekly Reports</div></div>
+        <div class="stat-card"><div class="num" style="color:${openEsc>0?'var(--danger)':'var(--accent)'}">${d.escalations.length}</div><div class="label">Escalations</div><div class="sub">${openEsc} pending decision</div></div>
+      </div>
+      <div class="recent-grid">
+        <div class="card"><div class="card-header"><div class="card-title">Recent Meeting Briefs</div><button class="btn btn-ghost btn-sm" onclick="App.navigate('report-preMeetingBriefs')">View all</button></div>
+          ${recent('preMeetingBriefs',i=>i.meetingTitle,i=>i.createdAt)}</div>
+        <div class="card"><div class="card-header"><div class="card-title">Recent Escalations</div><button class="btn btn-ghost btn-sm" onclick="App.navigate('report-escalations')">View all</button></div>
+          ${recent('escalations',i=>i.refNo+' — '+i.nature,i=>i.escDate)}</div>
+      </div>`;
+  },
+
+  async formView(collection, title, renderFn, dataFn, prefillId) {
+    let prefill = {}, editMode = false;
+    if(prefillId) { prefill = await DM.getOne(collection, prefillId)||{}; editMode=true; }
+    
+    document.getElementById('topbar-actions').innerHTML = '';
+    document.getElementById('content').innerHTML = `
+      <div class="page-header">
+        <div><h2>${title}</h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="App.navigate('report-${collection}')">← Back</button>
+          <button class="btn btn-primary" onclick="VIEWS.submitForm('${collection}','${prefillId||''}',${JSON.stringify(dataFn).replace(/</g,'\\x3c')})" id="save-btn">
+            ${editMode?'Update Entry':'Save Entry'}
+          </button>
+        </div>
+      </div>
+      <div class="card"><div class="card-body">${renderFn(prefill)}</div></div>`;
+  },
+
+  async submitFormHandler(collection, editId, dataFn) {
+    const form = document.getElementById('entry-form');
+    if(!form.checkValidity()) { form.reportValidity(); return; }
+    const btn = document.getElementById('save-btn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Saving…';
+    try {
+      const data = dataFn(form);
+      if(editId) { await DM.update(collection, editId, data); App.alert('Entry updated','success'); }
+      else { await DM.add(collection, data); App.alert('Entry saved','success'); }
+      App.navigate('report-'+collection);
+    } catch(e) { App.alert('Error: '+e.message,'error'); btn.disabled=false; btn.textContent=editId?'Update Entry':'Save Entry'; }
+  },
+
+  async reportView(collection, title, itemFn) {
+    const items = await DM.get(collection);
+    document.getElementById('topbar-actions').innerHTML = '';
+    document.getElementById('content').innerHTML = `
+      <div class="page-header">
+        <div><h2>${title}</h2><p>${items.length} entr${items.length===1?'y':'ies'}</p></div>
+      </div>
+      <div class="card">
+        ${items.length===0 ? `<div class="empty-state"><div class="icon">📋</div><h3>No entries yet</h3><p>Use the sidebar to create your first entry.</p></div>`
+        : items.map(i=>`<div class="list-item">
+          <div class="list-item-main" onclick="App.navigate('detail-${collection}-${i.id}')" style="cursor:pointer">
+            <div class="list-item-title">${itemFn(i).title}</div>
+            <div class="list-item-meta">${itemFn(i).meta}</div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-secondary btn-sm" onclick="App.navigate('edit-${collection}-${i.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="VIEWS.confirmDelete('${collection}','${i.id}')">Delete</button>
+          </div></div>`).join('')}
+      </div>`;
+  },
+
+  confirmDelete(collection, id) {
+    App.showModal(`<div class="modal-header"><h3>Delete Entry</h3></div>
+      <div class="modal-body"><p>Are you sure? This cannot be undone.</p></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="App.closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="VIEWS.doDelete('${collection}','${id}')">Delete</button>
+      </div>`);
+  },
+
+  async doDelete(collection, id) {
+    App.closeModal();
+    try { await DM.remove(collection,id); App.alert('Deleted','success'); App.navigate('report-'+collection); }
+    catch(e) { App.alert('Delete failed: '+e.message,'error'); }
+  },
+
+  async detailView(collection, id, title, renderDetail) {
+    const item = await DM.getOne(collection, id);
+    if(!item) { App.alert('Entry not found','error'); return; }
+    document.getElementById('content').innerHTML = `
+      <div class="page-header">
+        <div><h2>${H.escHtml(title(item))}</h2><p>Created ${H.fmtDate(item.createdAt)} &middot; Last updated ${H.fmtDate(item.updatedAt)}</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
+          <button class="btn btn-secondary" onclick="App.navigate('edit-${collection}-${id}')">Edit</button>
+          <button class="btn btn-secondary" onclick="App.navigate('report-${collection}')">← Back</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-body">${renderDetail(item)}</div></div>`;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// DETAIL RENDERS
+// ═══════════════════════════════════════════════════════════
+const DETAIL = {
+  row(label, value) {
+    if(!value && value!==0) return '';
+    return `<tr><th>${H.escHtml(label)}</th><td>${H.nl2br(value)}</td></tr>`;
+  },
+  pmb(d) {
+    return `<table class="detail-table">
+      ${this.row('Meeting Title',d.meetingTitle)}${this.row('Date & Time',d.dateTime)}
+      ${this.row('Venue / Platform',d.venue)}${this.row('Convened By',d.convenedBy)}
+      ${this.row('Project Reference',d.projectRef)}${this.row('Attendees',d.attendees)}
+      ${this.row('Meeting Objective',d.objective)}${this.row('Context / Background',d.context)}
+      ${this.row('Agenda (Timed)',d.agenda)}${this.row('Pre-Read Material',d.preRead)}
+      ${this.row('Open Actions',d.openActions)}${this.row('Expected Output',d.expectedOutput)}
+      ${this.row('Circulated By',d.circulatedBy)}${this.row('Filed with PMO',d.filedPMO)}
+      ${this.row('PMO Filing Reference',d.pmoRef)}</table>`;
+  },
+  mom(d) {
+    const actionRows = (d.actionItems||[]).map(a=>`<tr>
+      <td>${a.id}</td><td>${H.escHtml(a.action)}</td><td>${H.escHtml(a.owner)}</td>
+      <td>${H.fmtDate(a.deadline)}</td><td>${H.badge(a.priority)}</td>
+      <td>${H.badge(a.status)}</td><td>${H.escHtml(a.remarks)}</td></tr>`).join('');
+    return `<table class="detail-table">
+      ${this.row('Meeting Title',d.meetingTitle)}${this.row('Date & Time',d.dateTime)}
+      ${this.row('Chaired By',d.chairedBy)}${this.row('Prepared By',d.preparedBy)}
+      ${this.row('Project Reference',d.projectRef)}${this.row('Attendees (Present)',d.attendeesPresent)}
+      ${this.row('Attendees (Absent)',d.attendeesAbsent)}${this.row('Summary',d.summary)}
+      ${this.row('Decisions Taken',d.decisions)}${this.row('Unresolved Items',d.unresolved)}
+      ${this.row('Next Meeting',d.nextMeeting)}${this.row('Filed with PMO',d.filedPMO)}</table>
+      ${d.actionItems?.length ? `<br><div class="section-title">Action Items</div>
+      <div class="action-table-wrap"><table class="action-table">
+        <thead><tr><th>#</th><th>Action</th><th>Owner</th><th>Deadline</th><th>Priority</th><th>Status</th><th>Remarks</th></tr></thead>
+        <tbody>${actionRows}</tbody></table></div>` : ''}`;
+  },
+  aar(d) {
+    return `<table class="detail-table">
+      ${this.row('Project / Event',d.projectName)}${this.row('Stage / Milestone',d.milestone)}
+      ${this.row('Date of AAR',H.fmtDate(d.aarDate))}${this.row('Conducted By',d.conductedBy)}
+      ${this.row('Participants',d.participants)}${this.row('1. What Was Planned?',d.planned)}
+      ${this.row('2. What Actually Happened?',d.happened)}${this.row('3. What Went Well?',d.wentWell)}
+      ${this.row('4. What Did Not Go Well?',d.wentPoorly)}${this.row('5. Root Causes',d.rootCauses)}
+      ${this.row('6. Corrective Actions',d.correctiveActions)}${this.row('7. Preventive Actions',d.preventiveActions)}
+      ${this.row('8. Knowledge to Capture',d.knowledge)}${this.row('9. Client Feedback',d.clientFeedback)}
+      ${this.row('Filed with PMO',d.filedPMO)}${this.row('PMO Reference',d.pmoRef)}</table>`;
+  },
+  km(d) {
+    return `<table class="detail-table">
+      ${this.row('Entry Title',d.title)}${this.row('Category',d.category)}
+      ${this.row('Date',H.fmtDate(d.entryDate))}${this.row('Project Reference',d.projectRef)}
+      ${this.row('Contributed By',d.contributedBy)}${this.row('Context',d.context)}
+      ${this.row('The Learning / Insight',d.insight)}${this.row('How to Apply It',d.application)}
+      ${this.row('Relevant Documents',d.relatedDocs)}${this.row('Validated By',d.validatedBy)}
+      ${this.row('Validation Date',H.fmtDate(d.validationDate))}</table>`;
+  },
+  weeklyDash(d) {
+    const metricLabels = {
+      totalOpenActions:'Total Open Actions',actionsClosedThisWeek:'Actions Closed This Week',
+      overdueActions:'Overdue Actions',preMeetingBriefPct:'Pre-Meeting Brief Compliance',
+      momWithin24Pct:'MOMs Within 24 Hrs',aarWithin48Pct:'AARs Within 48 Hrs',
+      kmEntriesAdded:'KM Entries Added',escalationsRaised:'Escalations Raised',redFlagProjects:'Red-Flag Projects'
+    };
+    const trendHtml = t => t==='↑' ? `<span class="trend-up">↑</span>` : t==='↓' ? `<span class="trend-down">↓</span>` : `<span class="trend-same">→</span>`;
+    const metricsRows = Object.entries(d.metrics||{}).map(([k,v])=>`<tr>
+      <td style="font-weight:500">${metricLabels[k]||k}</td>
+      <td><strong>${H.escHtml(v.thisWeek||'—')}</strong></td>
+      <td>${H.escHtml(v.lastWeek||'—')}</td>
+      <td>${trendHtml(v.trend)}</td>
+      <td>${H.escHtml(v.remarks||'')}</td></tr>`).join('');
+    return `<table class="detail-table">
+      ${this.row('Week Of',d.weekOf)}${this.row('Report Date',H.fmtDate(d.reportDate))}
+      ${this.row('Prepared By',d.preparedBy)}</table>
+      <br><div class="section-title">Metrics Grid</div>
+      <div class="action-table-wrap"><table class="metrics-table">
+        <thead><tr><th>Metric</th><th>This Week</th><th>Last Week</th><th>Trend</th><th>Remarks</th></tr></thead>
+        <tbody>${metricsRows}</tbody></table></div>
+      <table class="detail-table" style="margin-top:24px">
+        ${this.row('Top 3 Priorities',d.top3)}${this.row('Achievements',d.achievements)}
+        ${this.row('Founders Issues',d.foundersIssues)}${this.row('Consequence Actions',d.consequenceActions)}</table>`;
+  },
+  esc(d) {
+    return `<table class="detail-table">
+      ${this.row('Escalation Ref No.',d.refNo)}${this.row('Date of Escalation',H.fmtDate(d.escDate))}
+      ${this.row('Raised By',d.raisedBy)}${this.row('Project Reference',d.projectRef)}
+      ${this.row('Nature of Non-Compliance',d.nature)}${this.row('Description',d.description)}
+      ${this.row('Party Concerned',d.partyName)}${this.row('Prior Reminders Sent',d.remindersSent)}
+      ${this.row('Reminder Details',d.reminderDetails)}${this.row('Impact',d.impact)}
+      ${this.row('PMO Recommended Action',d.recommended)}
+      <tr style="background:#fffbeb"><th style="background:#fef3c7;color:#92400e">Founder Decision</th><td>${H.nl2br(d.founderDecision)||'<em style="color:var(--text-muted)">Pending</em>'}</td></tr>
+      ${this.row('Date of Decision',H.fmtDate(d.decisionDate))}${this.row('Communicated To',d.communicatedTo)}
+      ${this.row('Closure Status',d.closureStatus)}</table>`;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════════════════════
+const App = {
+  currentView: '',
+
+  navigate(view) {
+    this.currentView = view;
+    // Update active nav
+    document.querySelectorAll('.nav-item').forEach(el=>{
+      const v = el.dataset.view;
+      el.classList.toggle('active', v===view || view.startsWith('form-'+v?.replace('form-','')) || view.startsWith('report-'+v?.replace('report-','')));
+    });
+    document.getElementById('topbar-actions').innerHTML = '';
+    this.render(view);
+  },
+
+  async render(view) {
+    const content = document.getElementById('content');
+    const titleEl = document.getElementById('page-title');
+
+    // DETAIL VIEW routing: detail-{collection}-{id}
+    const detailMatch = view.match(/^detail-(.+?)-([a-z0-9]+)$/);
+    if(detailMatch) {
+      const [,col,id] = detailMatch;
+      const detailConfigs = {
+        preMeetingBriefs: {title:i=>i.meetingTitle||'Pre-Meeting Brief', render:DETAIL.pmb.bind(DETAIL)},
+        minutesOfMeeting: {title:i=>i.meetingTitle||'Minutes of Meeting', render:DETAIL.mom.bind(DETAIL)},
+        afterActionReviews: {title:i=>i.projectName||'After Action Review', render:DETAIL.aar.bind(DETAIL)},
+        kmEntries: {title:i=>i.title||'KM Entry', render:DETAIL.km.bind(DETAIL)},
+        weeklyDashboards: {title:i=>'Weekly Dashboard: '+i.weekOf, render:DETAIL.weeklyDash.bind(DETAIL)},
+        escalations: {title:i=>i.refNo||'Escalation', render:DETAIL.esc.bind(DETAIL)}
+      };
+      const cfg = detailConfigs[col];
+      if(cfg) { await VIEWS.detailView(col, id, cfg.title, cfg.render); return; }
+    }
+
+    // EDIT VIEW routing
+    const editMatch = view.match(/^edit-(.+?)-([a-z0-9]+)$/);
+    if(editMatch) {
+      const [,col,id] = editMatch;
+      await this.routeForm(col, id);
+      return;
+    }
+
+    const routes = {
+      'dashboard': async () => { titleEl.textContent='Dashboard'; await VIEWS.dashboard(); },
+
+      // FORMS
+      'form-pmb': async () => { titleEl.textContent='Pre-Meeting Brief';
+        await VIEWS.formView('preMeetingBriefs','New Pre-Meeting Brief',FORMS.renderPMB.bind(FORMS),FORMS.pmbData.bind(FORMS)); },
+      'form-mom': async () => { titleEl.textContent='Minutes of Meeting';
+        await VIEWS.formView('minutesOfMeeting','New Minutes of Meeting',FORMS.renderMOM.bind(FORMS),FORMS.momData.bind(FORMS)); },
+      'form-aar': async () => { titleEl.textContent='After Action Review';
+        await VIEWS.formView('afterActionReviews','New After Action Review',FORMS.renderAAR.bind(FORMS),FORMS.aarData.bind(FORMS)); },
+      'form-km': async () => { titleEl.textContent='KM Repository';
+        await VIEWS.formView('kmEntries','New KM Entry',FORMS.renderKM.bind(FORMS),FORMS.kmData.bind(FORMS)); },
+      'form-dashboard': async () => { titleEl.textContent='Weekly Dashboard';
+        await VIEWS.formView('weeklyDashboards','New Weekly Dashboard',FORMS.renderDashboard.bind(FORMS),FORMS.dashboardData.bind(FORMS)); },
+      'form-esc': async () => {
+        titleEl.textContent='Escalation Form';
+        const all = await DM.get('escalations');
+        const nextNum = String(all.length+1).padStart(3,'0');
+        const refNum = `ESC-${new Date().getFullYear()}-${nextNum}`;
+        content.innerHTML = `<div class="page-header"><div><h2>New Escalation Form</h2></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onclick="App.navigate('report-escalations')">← Back</button>
+            <button class="btn btn-primary" id="save-btn" onclick="VIEWS.submitFormHandler('escalations','',FORMS.escData.bind(FORMS))">Save Entry</button>
+          </div></div>
+          <div class="card"><div class="card-body">${FORMS.renderESC({},refNum)}</div></div>`; },
+
+      // REPORTS
+      'report-preMeetingBriefs': async () => { titleEl.textContent='Meeting Briefs';
+        await VIEWS.reportView('preMeetingBriefs','Pre-Meeting Briefs',i=>({title:i.meetingTitle||'—',meta:`<span>${H.fmtDate(i.createdAt)}</span><span>${H.escHtml(i.projectRef||'')}</span>`})); },
+      'report-minutesOfMeeting': async () => { titleEl.textContent='Meeting Minutes';
+        await VIEWS.reportView('minutesOfMeeting','Minutes of Meeting',i=>({title:i.meetingTitle||'—',meta:`<span>${H.fmtDate(i.createdAt)}</span><span>${(i.actionItems||[]).length} actions</span>`})); },
+      'report-afterActionReviews': async () => { titleEl.textContent='AAR Reports';
+        await VIEWS.reportView('afterActionReviews','After Action Reviews',i=>({title:i.projectName||'—',meta:`<span>${H.fmtDate(i.aarDate)}</span><span>${H.escHtml(i.milestone||'')}</span>`})); },
+      'report-kmEntries': async () => { titleEl.textContent='KM Repository';
+        await VIEWS.reportView('kmEntries','KM Repository',i=>({title:i.title||'—',meta:`<span>${i.category}</span><span>${H.fmtDate(i.entryDate)}</span>`})); },
+      'report-weeklyDashboards': async () => { titleEl.textContent='Weekly Dashboards';
+        await VIEWS.reportView('weeklyDashboards','Weekly PMO Dashboards',i=>({title:'Week of '+i.weekOf,meta:`<span>${H.fmtDate(i.reportDate)}</span><span>${H.escHtml(i.preparedBy||'')}</span>`})); },
+      'report-escalations': async () => { titleEl.textContent='Escalations';
+        await VIEWS.reportView('escalations','Escalations',i=>({title:(i.refNo||'—')+' — '+(i.nature||''),meta:`<span>${H.fmtDate(i.escDate)}</span>${H.badge(i.closureStatus)}`})); },
+
+      // Short aliases (sidebar uses these)
+      'report-pmb': async () => App.navigate('report-preMeetingBriefs'),
+      'report-mom': async () => App.navigate('report-minutesOfMeeting'),
+      'report-aar': async () => App.navigate('report-afterActionReviews'),
+      'report-km': async () => App.navigate('report-kmEntries'),
+      'report-esc': async () => App.navigate('report-escalations'),
+    };
+
+    content.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+    const handler = routes[view];
+    if(handler) {
+      try { await handler(); }
+      catch(e) { content.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${H.escHtml(e.message)}</p></div>`; }
+    } else {
+      content.innerHTML = `<div class="empty-state"><h3>404</h3><p>View not found: ${H.escHtml(view)}</p></div>`;
+    }
+  },
+
+  async routeForm(col, editId) {
+    const formRoutes = {
+      preMeetingBriefs: {title:'Edit Pre-Meeting Brief', render:FORMS.renderPMB.bind(FORMS), data:FORMS.pmbData.bind(FORMS)},
+      minutesOfMeeting: {title:'Edit Minutes of Meeting', render:FORMS.renderMOM.bind(FORMS), data:FORMS.momData.bind(FORMS)},
+      afterActionReviews: {title:'Edit After Action Review', render:FORMS.renderAAR.bind(FORMS), data:FORMS.aarData.bind(FORMS)},
+      kmEntries: {title:'Edit KM Entry', render:FORMS.renderKM.bind(FORMS), data:FORMS.kmData.bind(FORMS)},
+      weeklyDashboards: {title:'Edit Weekly Dashboard', render:FORMS.renderDashboard.bind(FORMS), data:FORMS.dashboardData.bind(FORMS)},
+      escalations: {title:'Edit Escalation', render:(p)=>FORMS.renderESC(p), data:FORMS.escData.bind(FORMS)}
+    };
+    const cfg = formRoutes[col];
+    if(!cfg) return;
+    document.getElementById('page-title').textContent = cfg.title;
+    await VIEWS.formView(col, cfg.title, cfg.render, cfg.data, editId);
+  },
+
+  showSettings() {
+    const cfg = GH.cfg();
+    document.getElementById('modal-inner').innerHTML = `
+      <div class="modal-header">
+        <h3>GitHub Configuration</h3>
+        <button class="btn btn-ghost btn-sm" onclick="App.closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">
+          Data is stored as <code>pmo-data.json</code> in your GitHub repository. 
+          You need a Personal Access Token with <strong>repo</strong> scope.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="field"><label>Repository Owner (username or org)</label>
+            <input id="cfg-owner" value="${H.escHtml(cfg.owner||'')}" placeholder="e.g. your-username"></div>
+          <div class="field"><label>Repository Name</label>
+            <input id="cfg-repo" value="${H.escHtml(cfg.repo||'')}" placeholder="e.g. pmo-data"></div>
+          <div class="field"><label>Branch</label>
+            <input id="cfg-branch" value="${H.escHtml(cfg.branch||'main')}" placeholder="main"></div>
+          <div class="field"><label>Personal Access Token <span class="req">*</span></label>
+            <input id="cfg-token" type="password" value="${H.escHtml(cfg.token||'')}" placeholder="ghp_…">
+            <div class="hint">Stored locally in your browser only. Never sent anywhere except GitHub's API.</div></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="App.closeModal()">Cancel</button>
+        <button class="btn btn-secondary" onclick="App.testGH()">Test Connection</button>
+        <button class="btn btn-primary" onclick="App.saveSettings()">Save</button>
+      </div>`;
+    document.getElementById('modal').style.display='flex';
+  },
+
+  async testGH() {
+    const owner=document.getElementById('cfg-owner').value.trim();
+    const repo=document.getElementById('cfg-repo').value.trim();
+    const token=document.getElementById('cfg-token').value.trim();
+    const branch=document.getElementById('cfg-branch').value.trim()||'main';
+    GH.save({owner,repo,token,branch});
+    try {
+      const r = await fetch(`https://api.github.com/repos/${owner}/${repo}`,{headers:GH.headers()});
+      if(r.ok) App.alert('Connection successful ✓','success');
+      else App.alert('Connection failed: '+r.status,'error');
+    } catch(e) { App.alert('Connection error: '+e.message,'error'); }
+  },
+
+  saveSettings() {
+    const owner=document.getElementById('cfg-owner').value.trim();
+    const repo=document.getElementById('cfg-repo').value.trim();
+    const token=document.getElementById('cfg-token').value.trim();
+    const branch=document.getElementById('cfg-branch').value.trim()||'main';
+    GH.save({owner,repo,token,branch});
+    DM.cache=null; DM.sha=null;
+    this.closeModal();
+    this.updateGHStatus();
+    App.alert('Settings saved. Data will sync to GitHub.','success');
+    this.navigate('dashboard');
+  },
+
+  showModal(html) {
+    document.getElementById('modal-inner').innerHTML = html;
+    document.getElementById('modal').style.display='flex';
+  },
+
+  closeModal() { document.getElementById('modal').style.display='none'; },
+
+  alert(msg, type='info') {
+    const el = document.createElement('div');
+    el.className = 'alert '+(type==='error'?'error':type==='success'?'success':'');
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 3500);
+  },
+
+  updateGHStatus() {
+    const cfg = GH.cfg();
+    const dot = document.getElementById('github-dot');
+    const label = document.getElementById('github-status-label');
+    const repoLabel = document.getElementById('github-repo-label');
+    if(cfg.owner && cfg.repo && cfg.token) {
+      dot.classList.add('connected');
+      label.textContent = 'Connected';
+      repoLabel.textContent = `${cfg.owner}/${cfg.repo}`;
+    } else {
+      dot.classList.remove('connected');
+      label.textContent = 'Not Connected';
+      repoLabel.textContent = 'Click to configure';
+    }
+  },
+
+  async init() {
+    this.updateGHStatus();
+    // Patch submitForm to work from inline onclick
+    VIEWS.submitForm = (col, editId, dataFnRef) => {
+      const form = document.getElementById('entry-form');
+      if(!form.checkValidity()) { form.reportValidity(); return; }
+      const btn = document.getElementById('save-btn');
+      const origText = btn.textContent;
+      btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Saving…';
+      let dataFn;
+      const map = {
+        preMeetingBriefs: FORMS.pmbData.bind(FORMS),
+        minutesOfMeeting: FORMS.momData.bind(FORMS),
+        afterActionReviews: FORMS.aarData.bind(FORMS),
+        kmEntries: FORMS.kmData.bind(FORMS),
+        weeklyDashboards: FORMS.dashboardData.bind(FORMS),
+        escalations: FORMS.escData.bind(FORMS)
+      };
+      dataFn = map[col];
+      if(!dataFn) { btn.disabled=false; btn.textContent=origText; return; }
+      const data = dataFn(form);
+      const p = editId ? DM.update(col, editId, data) : DM.add(col, data);
+      p.then(()=>{
+        App.alert(editId?'Entry updated':'Entry saved','success');
+        App.navigate('report-'+col);
+      }).catch(e=>{ App.alert('Error: '+e.message,'error'); btn.disabled=false; btn.textContent=origText; });
+    };
+    this.navigate('dashboard');
+  }
+};
+
+// Boot
+document.addEventListener('DOMContentLoaded', ()=>App.init());
+</script>
+</body>
+</html>
